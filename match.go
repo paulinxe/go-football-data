@@ -29,14 +29,8 @@ func (c *Client) GetMatch(ctx context.Context, matchID string, mapTo interface{}
 		return err
 	}
 
-	if err := json.Unmarshal(body, mapTo); err != nil {
-		return fmt.Errorf("failed to unmarshal match: %w", err) // TODO: use a custom error?
-	}
-
-	validate := validator.New(validator.WithRequiredStructEnabled())
-	err = validate.Struct(mapTo)
-	if err != nil {
-		return fmt.Errorf("failed to unmarshal match: %w", err) // TODO: use a custom error?
+	if err := unmarshal(body, mapTo); err != nil {
+		return err
 	}
 
 	match, ok := mapTo.(*types.Match)
@@ -93,14 +87,8 @@ func (c *Client) GetMatches(ctx context.Context, filters MatchesFilter, mapTo in
 		return err
 	}
 
-	if err := json.Unmarshal(body, mapTo); err != nil {
-		return fmt.Errorf("failed to unmarshal matches: %w", err) // TODO: use a custom error?
-	}
-
-	validate := validator.New(validator.WithRequiredStructEnabled())
-	err = validate.Struct(mapTo)
-	if err != nil {
-		return fmt.Errorf("failed to unmarshal matches: %w", err) // TODO: use a custom error?
+	if err := unmarshal(body, mapTo); err != nil {
+		return err
 	}
 
 	list, ok := mapTo.(*types.MatchesList)
@@ -113,6 +101,20 @@ func (c *Client) GetMatches(ctx context.Context, filters MatchesFilter, mapTo in
 		if len(errs) > 0 {
 			return fmt.Errorf("failed to validate matches: %w", errors.Join(errs...)) // TODO: use a custom error?
 		}
+	}
+
+	return nil
+}
+
+func unmarshal(body []byte, mapTo interface{}) error {
+	if err := json.Unmarshal(body, mapTo); err != nil {
+		return fmt.Errorf("failed to unmarshal matches: %w", err) // TODO: use a custom error?
+	}
+
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	err := validate.Struct(mapTo)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal matches: %w", err) // TODO: use a custom error?
 	}
 
 	return nil

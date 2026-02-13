@@ -229,6 +229,7 @@ func Test_we_can_get_a_match_with_a_custom_struct(t *testing.T) {
 	}
 }
 
+// We only test the happy path here because the logic is the same as for a single match.
 func Test_we_can_get_a_list_of_matches(t *testing.T) {
 	serverHits := 0
 	calledURL := ""
