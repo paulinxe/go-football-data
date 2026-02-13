@@ -62,7 +62,7 @@ func (c *Client) get(ctx context.Context, path string, queryParams *url.Values) 
 
 	req, err := http.NewRequestWithContext(ctx, "GET", fullURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err) // TODO: use a custom error?
+		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
 	req.Header.Set("X-Auth-Token", c.apiKey)
@@ -70,20 +70,20 @@ func (c *Client) get(ctx context.Context, path string, queryParams *url.Values) 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
-			return nil, fmt.Errorf("request canceled: %w", err) // TODO: use a custom error?
+			return nil, fmt.Errorf("request canceled: %w", err)
 		}
 
 		if errors.Is(err, context.DeadlineExceeded) {
-			return nil, fmt.Errorf("context timeout: %w", err) // TODO: use a custom error?
+			return nil, fmt.Errorf("context timeout: %w", err)
 		}
 
-		return nil, fmt.Errorf("failed to get matches: %w", err) // TODO: use a custom error?
+		return nil, fmt.Errorf("failed to get matches: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", err) // TODO: use a custom error
+		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	if resp.StatusCode != 200 {

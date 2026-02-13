@@ -2,6 +2,7 @@ package football_data
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -90,9 +91,32 @@ func Test_err_is_returned_when_match_is_logically_incorrect(t *testing.T) {
 		t.Fatalf("expected error, got nil")
 	}
 
-	// Most probably there is a better way of doing this
-	if err.Error() != "failed to validate match: [winner is required for finished/awarded matches full time score is required for finished/awarded matches half time score is required for finished/awarded matches]" {
-		t.Fatalf("expected error to be 'failed to validate match: [winner is required for finished/awarded matches full time score is required for finished/awarded matches half time score is required for finished/awarded matches]', got %s", err)
+	var validationErr *ValidationError
+	if !errors.As(err, &validationErr) {
+		t.Fatalf("expected error to be *ValidationError, got %T", err)
+	}
+
+	if len(validationErr.Errs) != 3 {
+		t.Fatalf("expected 3 validation errors, got %d", len(validationErr.Errs))
+	}
+
+	expectedMsgs := []string{
+		"winner is required for finished/awarded matches",
+		"full time score is required for finished/awarded matches",
+		"half time score is required for finished/awarded matches",
+	}
+	for _, expected := range expectedMsgs {
+		var found bool
+		for _, err := range validationErr.Errs {
+			if err.Error() == expected {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			t.Fatalf("expected validation errors to contain %q", expected)
+		}
 	}
 
 	if serverHits != 1 {

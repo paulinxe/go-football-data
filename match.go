@@ -2,7 +2,6 @@ package football_data
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -18,7 +17,7 @@ import (
 // This means that you have to ensure things like the winner is set when the match is finished, etc.
 func (c *Client) GetMatch(ctx context.Context, matchID string, mapTo interface{}) error {
 	if mapTo == nil {
-		return fmt.Errorf("mapTo cannot be nil") // TODO: use a custom error?
+		return ErrMapToNil
 	}
 
 	path := fmt.Sprintf("/matches/%s", matchID)
@@ -35,7 +34,7 @@ func (c *Client) GetMatch(ctx context.Context, matchID string, mapTo interface{}
 	if ok {
 		errs := validateMatch(match)
 		if len(errs) > 0 {
-			return fmt.Errorf("failed to validate match: %v", errs) // TODO: use a custom error?
+			return &ValidationError{Errs: errs}
 		}
 	}
 
@@ -97,7 +96,7 @@ func (c *Client) GetMatches(ctx context.Context, filters MatchesFilter, mapTo in
 		}
 
 		if len(errs) > 0 {
-			return fmt.Errorf("failed to validate matches: %w", errors.Join(errs...)) // TODO: use a custom error?
+			return &ValidationError{Errs: errs}
 		}
 	}
 
