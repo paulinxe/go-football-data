@@ -7,7 +7,7 @@ type Match struct {
 	HomeTeam    Team         `json:"homeTeam" validate:"required"`
 	AwayTeam    Team         `json:"awayTeam" validate:"required"`
 	Score       Score        `json:"score" validate:"required"`
-	Competition *Competition  `json:"competition" validate:"required"`
+	Competition Competition  `json:"competition" validate:"required"`
 }
 
 type Competition struct {
@@ -27,15 +27,15 @@ type Team struct {
 }
 
 type Score struct {
-	Winner string `json:"winner"`
-	Duration string `json:"duration"`
-	FullTime ScoreTime `json:"fullTime"` // TODO: sadly a 0 makes the required validation fail...
-	HalfTime ScoreTime `json:"halfTime"` // TODO: sadly a 0 makes the required validation fail...
+	Winner *string `json:"winner"`
+	Duration string `json:"duration" validate:"required"`
+	FullTime ScoreTime `json:"fullTime" validate:"required"`
+	HalfTime ScoreTime `json:"halfTime" validate:"required"`
 }
 
 type ScoreTime struct {
-	Home uint `json:"home"` // TODO: sadly a 0 makes the required validation fail...
-	Away uint `json:"away"` // TODO: sadly a 0 makes the required validation fail..
+	Home *uint `json:"home"`
+	Away *uint `json:"away"`
 }
 
 // TODO: Add referees

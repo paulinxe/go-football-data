@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"encoding/json"
-
-	"github.com/go-playground/validator/v10"
 )
 
 // GetMatch fetches a match using GET matches/{id} and maps the response.
@@ -26,9 +24,10 @@ func (c *Client) GetMatch(ctx context.Context, matchID string, mapTo interface{}
 		return fmt.Errorf("failed to unmarshal match: %w", err) // TODO: use a custom error?
 	}
 
-	validator := validator.New()
-    if err := validator.Struct(mapTo); err != nil {
-		return fmt.Errorf("failed to unmarshal match: %w", err) // TODO: use a custom error?
+	validator := NewValidator()
+	errs := validator.ValidateStruct(mapTo)
+	if len(errs) > 0 {
+		return fmt.Errorf("failed to unmarshal match: %v", errs) // TODO: use a custom error?
 	}
 
 	return nil

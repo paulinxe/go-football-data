@@ -84,12 +84,17 @@ func Test_we_can_get_a_finished_match(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
+	winner := "AWAY_TEAM"
+	home := uint(0)
+	away := uint(3)
+	halfTimeHome := uint(0)
+	halfTimeAway := uint(2)
 	expectedMatch := Match{
 		ID: 544391,
 		HomeTeam: Team{ID: 77, Name: "Athletic Club", ShortName: "Athletic", TLA: "ATH", Crest: "https://crests.football-data.org/77.png"},
 		AwayTeam: Team{ID: 86, Name: "Real Madrid CF", ShortName: "Real Madrid", TLA: "RMA", Crest: "https://crests.football-data.org/86.png"},
-		Score: Score{Winner: "AWAY_TEAM", Duration: "REGULAR", FullTime: ScoreTime{Home: 0, Away: 3}, HalfTime: ScoreTime{Home: 0, Away: 2}},
-		Competition: &Competition{ID: 2014, Name: "Primera Division", Code: "PD", Type: "LEAGUE", Emblem: "https://crests.football-data.org/laliga.png"},
+		Score: Score{Winner: &winner, Duration: "REGULAR", FullTime: ScoreTime{Home: &home, Away: &away}, HalfTime: ScoreTime{Home: &halfTimeHome, Away: &halfTimeAway}},
+		Competition: Competition{ID: 2014, Name: "Primera Division", Code: "PD", Type: "LEAGUE", Emblem: "https://crests.football-data.org/laliga.png"},
 		UTCDate: "2025-12-03T18:00:00Z",
 		Status: "FINISHED",
 	}
@@ -126,12 +131,17 @@ func Test_we_can_get_a_scheduled_match(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
+	winner := ""
+	home := uint(0)
+	away := uint(0)
+	halfTimeHome := uint(0)
+	halfTimeAway := uint(0)
 	expectedMatch := Match{
 		ID: 544590,
 		HomeTeam: Team{ID: 298, Name: "Girona FC", ShortName: "Girona", TLA: "GIR", Crest: "https://crests.football-data.org/298.png"},
 		AwayTeam: Team{ID: 285, Name: "Elche CF", ShortName: "Elche", TLA: "ELC", Crest: "https://crests.football-data.org/285.png"},
-		Score: Score{Winner: "", Duration: "REGULAR", FullTime: ScoreTime{Home: 0, Away: 0}, HalfTime: ScoreTime{Home: 0, Away: 0}},
-		Competition: &Competition{ID: 2014, Name: "Primera Division", Code: "PD", Type: "LEAGUE", Emblem: "https://crests.football-data.org/laliga.png"},
+		Score: Score{Winner: &winner, Duration: "REGULAR", FullTime: ScoreTime{Home: &home, Away: &away}, HalfTime: ScoreTime{Home: &halfTimeHome, Away: &halfTimeAway}},
+		Competition: Competition{ID: 2014, Name: "Primera Division", Code: "PD", Type: "LEAGUE", Emblem: "https://crests.football-data.org/laliga.png"},
 		UTCDate: "2026-05-24T00:00:00Z",
 		Status: "SCHEDULED",
 	}
