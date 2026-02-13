@@ -1,4 +1,4 @@
-package football_data
+package types
 
 type Match struct {
 	ID          uint         `json:"id" validate:"required"`

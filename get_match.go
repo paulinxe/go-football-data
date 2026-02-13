@@ -4,11 +4,15 @@ import (
 	"context"
 	"fmt"
 	"encoding/json"
+	"github.com/paulinxe/go-football-data/validator"
+	"github.com/paulinxe/go-football-data/types"
 )
 
 // GetMatch fetches a match using GET matches/{id} and maps the response.
 // mapTo is a pointer to the struct you want to map the response to.
 // You can use the Match struct found in types.go or pass a custom struct you have.
+// WARNING: if you pass a custom struct, you are responsible for logically validating it.
+// This means that you have to ensure things like the winner is set when the match is finished, etc.
 func (c *Client) GetMatch(ctx context.Context, matchID string, mapTo interface{}) error {
 	if mapTo == nil {
 		return fmt.Errorf("mapTo cannot be nil") // TODO: use a custom error?
@@ -24,10 +28,18 @@ func (c *Client) GetMatch(ctx context.Context, matchID string, mapTo interface{}
 		return fmt.Errorf("failed to unmarshal match: %w", err) // TODO: use a custom error?
 	}
 
-	validator := NewValidator()
+	validator := validator.New()
 	errs := validator.ValidateStruct(mapTo)
 	if len(errs) > 0 {
 		return fmt.Errorf("failed to unmarshal match: %v", errs) // TODO: use a custom error?
+	}
+
+	match, ok := mapTo.(*types.Match)
+	if ok {
+		errs = validator.ValidateMatch(match)
+		if len(errs) > 0 {
+			return fmt.Errorf("failed to validate match: %v", errs) // TODO: use a custom error?
+		}
 	}
 
 	return nil
