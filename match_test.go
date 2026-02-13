@@ -23,16 +23,16 @@ var scheduledMatch string
 var logicallyInvalidMatch string
 
 //go:embed testutil/match/list.json
-var list string
+var matchesList string
 
-func Test_err_is_returned_when_mapTo_is_nil(t *testing.T) {
+func Test_err_is_returned_when_match_mapTo_is_nil(t *testing.T) {
 	client := New("api_key")
 	if err := client.GetMatch(context.Background(), "1", nil); err == nil {
 		t.Fatalf("expected error, got nil")
 	}
 }
 
-func Test_err_is_returned_when_get_client_call_fails(t *testing.T) {
+func Test_err_is_returned_when_match_get_client_call_fails(t *testing.T) {
 	serverHits := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -52,7 +52,7 @@ func Test_err_is_returned_when_get_client_call_fails(t *testing.T) {
 	}
 }
 
-func Test_err_is_returned_when_unmarshal_fails(t *testing.T) {
+func Test_err_is_returned_when_match_unmarshal_fails(t *testing.T) {
 	serverHits := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -235,7 +235,7 @@ func Test_we_can_get_a_list_of_matches(t *testing.T) {
 	calledURL := ""
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(list))
+		_, _ = w.Write([]byte(matchesList))
 		serverHits++
 		calledURL = r.URL.String()
 	}))

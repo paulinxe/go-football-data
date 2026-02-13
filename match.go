@@ -2,14 +2,12 @@ package football_data
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
 	"strings"
 	"time"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/paulinxe/go-football-data/types"
 )
 
@@ -55,7 +53,7 @@ type MatchesFilter struct {
 // GetMatches fetches matches using GET /matches?{filters} and maps the response.
 // It forces the caller to pass at least one filter.
 // mapTo is a pointer to the struct you want to map the response to.
-// You can use the Matches struct found in types.go or pass a custom struct you have.
+// You can use the MatchesList struct found in types.go or pass a custom struct you have.
 // WARNING: if you pass a custom struct, you are responsible for logically validating it.
 // This means that you have to ensure things like the winner is set when the match is finished, etc.
 func (c *Client) GetMatches(ctx context.Context, filters MatchesFilter, mapTo interface{}) error {
@@ -101,20 +99,6 @@ func (c *Client) GetMatches(ctx context.Context, filters MatchesFilter, mapTo in
 		if len(errs) > 0 {
 			return fmt.Errorf("failed to validate matches: %w", errors.Join(errs...)) // TODO: use a custom error?
 		}
-	}
-
-	return nil
-}
-
-func unmarshal(body []byte, mapTo interface{}) error {
-	if err := json.Unmarshal(body, mapTo); err != nil {
-		return fmt.Errorf("failed to unmarshal matches: %w", err) // TODO: use a custom error?
-	}
-
-	validate := validator.New(validator.WithRequiredStructEnabled())
-	err := validate.Struct(mapTo)
-	if err != nil {
-		return fmt.Errorf("failed to unmarshal matches: %w", err) // TODO: use a custom error?
 	}
 
 	return nil

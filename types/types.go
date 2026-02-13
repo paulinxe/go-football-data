@@ -14,6 +14,10 @@ type Match struct {
 	Competition Competition  `json:"competition" validate:"required"`
 }
 
+type CompetitionsList struct {
+	Competitions []Competition `json:"competitions" validate:"required,dive"`
+}
+
 type Competition struct {
 	ID uint `json:"id" validate:"required"`
 	Name string `json:"name" validate:"required"`
