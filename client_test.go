@@ -87,7 +87,7 @@ func Test_get_works_as_expected(t *testing.T) {
 			client := New("test-api-key", WithBaseURL(server.URL))
 
 			// Execute the get method
-			body, err := client.get(tt.ctx, "/test-path")
+			body, err := client.get(tt.ctx, "/test-path", nil)
 
 			// Validation logic
 			if (err != nil) != tt.wantError {

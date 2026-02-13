@@ -6,20 +6,24 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/paulinxe/go-football-data/types"
 
 	_ "embed"
 )
 
-//go:embed testutil/finished_match.json
+//go:embed testutil/match/finished.json
 var finishedMatch string
 
-//go:embed testutil/scheduled_match.json
+//go:embed testutil/match/scheduled.json
 var scheduledMatch string
 
-//go:embed testutil/logically_invalid_match.json
+//go:embed testutil/match/logically_invalid.json
 var logicallyInvalidMatch string
+
+//go:embed testutil/match/list.json
+var list string
 
 func Test_err_is_returned_when_mapTo_is_nil(t *testing.T) {
 	client := New("api_key")
@@ -222,5 +226,65 @@ func Test_we_can_get_a_match_with_a_custom_struct(t *testing.T) {
 
 	if calledURL != "/matches/1" {
 		t.Fatalf("expected called URL to be /matches/1, got %s", calledURL)
+	}
+}
+
+func Test_we_can_get_a_list_of_matches(t *testing.T) {
+	serverHits := 0
+	calledURL := ""
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(list))
+		serverHits++
+		calledURL = r.URL.String()
+	}))
+	defer server.Close()
+
+	client := New("api_key", WithBaseURL(server.URL))
+
+	mapTo := types.MatchesList{}
+	dateFrom, _ := time.Parse(time.DateOnly, "2026-02-12")
+	dateTo, _ := time.Parse(time.DateOnly, "2026-02-13")
+	filters := MatchesFilter{
+		Ids:      []string{"1"},
+		DateFrom: &dateFrom,
+		DateTo:   &dateTo,
+		Status:   "FINISHED",
+	}
+	err := client.GetMatches(context.Background(), filters, &mapTo)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if serverHits != 1 {
+		t.Fatalf("expected 1 server hit, got %d", serverHits)
+	}
+
+	expectedURL := "/matches?dateFrom=2026-02-12T00%3A00%3A00Z&dateTo=2026-02-13T00%3A00%3A00Z&ids=1&status=FINISHED"
+	if calledURL != expectedURL {
+		t.Fatalf("expected called URL to be %s, got %s", expectedURL, calledURL)
+	}
+
+	if len(mapTo.Matches) != 1 {
+		t.Fatalf("expected 1 match, got %d", len(mapTo.Matches))
+	}
+
+	winner := "AWAY_TEAM"
+	home := uint(1)
+	away := uint(3)
+	halfTimeHome := uint(0)
+	halfTimeAway := uint(3)
+	expectedMatch := types.Match{
+		ID:          544214,
+		HomeTeam:    types.Team{ID: 298, Name: "Girona FC", ShortName: "Girona", TLA: "GIR", Crest: "https://crests.football-data.org/298.png"},
+		AwayTeam:    types.Team{ID: 87, Name: "Rayo Vallecano de Madrid", ShortName: "Rayo Vallecano", TLA: "RAY", Crest: "https://crests.football-data.org/87.png"},
+		Score:       types.Score{Winner: &winner, Duration: "REGULAR", FullTime: types.ScoreTime{Home: &home, Away: &away}, HalfTime: types.ScoreTime{Home: &halfTimeHome, Away: &halfTimeAway}},
+		Competition: types.Competition{ID: 2014, Name: "Primera Division", Code: "PD", Type: "LEAGUE", Emblem: "https://crests.football-data.org/laliga.png"},
+		UTCDate:     "2025-08-15T17:00:00Z",
+		Status:      "FINISHED",
+	}
+
+	if !reflect.DeepEqual(mapTo.Matches[0], expectedMatch) {
+		t.Fatalf("expected match to be %+v, got %+v", expectedMatch, mapTo.Matches[0])
 	}
 }

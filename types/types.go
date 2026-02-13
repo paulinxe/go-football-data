@@ -1,5 +1,9 @@
 package types
 
+type MatchesList struct {
+	Matches []Match `json:"matches" validate:"required,dive"`
+}
+
 type Match struct {
 	ID          uint         `json:"id" validate:"required"`
 	UTCDate     string       `json:"utcDate" validate:"required"`
@@ -29,8 +33,8 @@ type Team struct {
 type Score struct {
 	Winner *string `json:"winner"`
 	Duration string `json:"duration" validate:"required"`
-	FullTime ScoreTime `json:"fullTime" validate:"required"`
-	HalfTime ScoreTime `json:"halfTime" validate:"required"`
+	FullTime ScoreTime `json:"fullTime"`
+	HalfTime ScoreTime `json:"halfTime"`
 }
 
 type ScoreTime struct {
