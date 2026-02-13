@@ -2,10 +2,10 @@ package football_data
 
 import (
 	"context"
-	"fmt"
 	"encoding/json"
-	"github.com/paulinxe/go-football-data/validator"
+	"fmt"
 	"github.com/paulinxe/go-football-data/types"
+	"github.com/paulinxe/go-football-data/validator"
 )
 
 // GetMatch fetches a match using GET matches/{id} and maps the response.
@@ -17,7 +17,7 @@ func (c *Client) GetMatch(ctx context.Context, matchID string, mapTo interface{}
 	if mapTo == nil {
 		return fmt.Errorf("mapTo cannot be nil") // TODO: use a custom error?
 	}
-	
+
 	path := fmt.Sprintf("/matches/%s", matchID)
 	body, err := c.get(ctx, path)
 	if err != nil {

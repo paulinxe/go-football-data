@@ -9,8 +9,8 @@ import (
 )
 
 type Client struct {
-	baseURL string
-	apiKey string
+	baseURL    string
+	apiKey     string
 	httpClient *http.Client
 }
 type Option func(*Client)
@@ -18,21 +18,23 @@ type Option func(*Client)
 // HTTPError is an error that is returned when the HTTP response status is not 200 OK.
 // It can be consumed as follows:
 // var httpErr *football_data.HTTPError
-// if errors.As(err, &httpErr) {
-//     log.Printf("status: %d", httpErr.StatusCode)
-// }
+//
+//	if errors.As(err, &httpErr) {
+//	    log.Printf("status: %d", httpErr.StatusCode)
+//	}
 type HTTPError struct {
-    StatusCode int
-    Body       []byte
-}
-func (e *HTTPError) Error() string {
-    return fmt.Sprintf("HTTP error: %d %s", e.StatusCode, http.StatusText(e.StatusCode))
+	StatusCode int
+	Body       []byte
 }
 
-func NewClient(apiKey string, opts ...Option) *Client {
+func (e *HTTPError) Error() string {
+	return fmt.Sprintf("HTTP error: %d %s", e.StatusCode, http.StatusText(e.StatusCode))
+}
+
+func New(apiKey string, opts ...Option) *Client {
 	client := &Client{
-		baseURL: "https://api.football-data.org/v4",
-		apiKey: apiKey,
+		baseURL:    "https://api.football-data.org/v4",
+		apiKey:     apiKey,
 		httpClient: &http.Client{},
 	}
 
@@ -52,8 +54,6 @@ func WithBaseURL(baseURL string) Option {
 
 func (c *Client) get(ctx context.Context, path string) ([]byte, error) {
 	fullURL := c.baseURL + path
-
-	//slog.Debug("Sending GET request", "url", fullURL)
 
 	req, err := http.NewRequestWithContext(ctx, "GET", fullURL, nil)
 	if err != nil {
