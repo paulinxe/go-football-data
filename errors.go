@@ -4,11 +4,28 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"net/http"
 )
 
 // ErrMapToNil is returned when a Get method is called with a nil mapTo argument.
 // Callers can detect it with: errors.Is(err, football_data.ErrMapToNil).
 var ErrMapToNil = errors.New("mapTo cannot be nil")
+
+// HTTPError is an error that is returned when the HTTP response status is not 200 OK.
+// It can be consumed as follows:
+// var httpErr *football_data.HTTPError
+//
+//	if errors.As(err, &httpErr) {
+//	    // your logic here
+//	}
+type HTTPError struct {
+	StatusCode int
+	Body       []byte
+}
+
+func (e *HTTPError) Error() string {
+	return fmt.Sprintf("HTTP error: %d %s: %s", e.StatusCode, http.StatusText(e.StatusCode), string(e.Body))
+}
 
 // UnmarshalError wraps an error that occurred during JSON unmarshaling or struct validation.
 // Callers can use errors.As to get the underlying error:

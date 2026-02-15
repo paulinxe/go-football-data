@@ -17,22 +17,6 @@ type Client struct {
 	httpClient *http.Client
 }
 
-// HTTPError is an error that is returned when the HTTP response status is not 200 OK.
-// It can be consumed as follows:
-// var httpErr *football_data.HTTPError
-//
-//	if errors.As(err, &httpErr) {
-//	    log.Printf("status: %d", httpErr.StatusCode)
-//	}
-type HTTPError struct {
-	StatusCode int
-	Body       []byte
-}
-
-func (e *HTTPError) Error() string {
-	return fmt.Sprintf("HTTP error: %d %s", e.StatusCode, http.StatusText(e.StatusCode))
-}
-
 func New(apiKey string, options ...Option[Client]) *Client {
 	client := &Client{
 		baseURL:    "https://api.football-data.org/v4",

@@ -276,7 +276,7 @@ func Test_we_can_get_a_list_of_matches(t *testing.T) {
 		DateTo:   &dateTo,
 		Status:   "FINISHED",
 	}
-	err := client.GetMatches(context.Background(), filters, &mapTo)
+	err := client.GetMatches(context.Background(), 2014, filters, &mapTo)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -285,7 +285,7 @@ func Test_we_can_get_a_list_of_matches(t *testing.T) {
 		t.Fatalf("expected 1 server hit, got %d", serverHits)
 	}
 
-	expectedURL := "/matches?dateFrom=2026-02-12T00%3A00%3A00Z&dateTo=2026-02-13T00%3A00%3A00Z&ids=1&status=FINISHED"
+	expectedURL := "/competitions/2014/matches?dateFrom=2026-02-12&dateTo=2026-02-13&ids=1&status=FINISHED"
 	if calledURL != expectedURL {
 		t.Fatalf("expected called URL to be %s, got %s", expectedURL, calledURL)
 	}

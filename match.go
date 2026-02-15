@@ -55,8 +55,8 @@ type MatchesFilter struct {
 // You can use the MatchesList struct found in types.go or pass a custom struct you have.
 // WARNING: if you pass a custom struct, you are responsible for logically validating it.
 // This means that you have to ensure things like the winner is set when the match is finished, etc.
-func (c *Client) GetMatches(ctx context.Context, filters MatchesFilter, mapTo interface{}) error {
-	path := "/matches"
+func (c *Client) GetMatches(ctx context.Context, competitionID uint, filters MatchesFilter, mapTo interface{}) error {
+	path := fmt.Sprintf("/competitions/%d/matches", competitionID)
 	queryParams := url.Values{}
 
 	if len(filters.Ids) > 0 {
@@ -64,15 +64,15 @@ func (c *Client) GetMatches(ctx context.Context, filters MatchesFilter, mapTo in
 	}
 
 	if filters.Date != nil {
-		queryParams.Add("date", filters.Date.Format(time.RFC3339))
+		queryParams.Add("date", filters.Date.Format(time.DateOnly))
 	}
 
 	if filters.DateFrom != nil {
-		queryParams.Add("dateFrom", filters.DateFrom.Format(time.RFC3339))
+		queryParams.Add("dateFrom", filters.DateFrom.Format(time.DateOnly))
 	}
 
 	if filters.DateTo != nil {
-		queryParams.Add("dateTo", filters.DateTo.Format(time.RFC3339))
+		queryParams.Add("dateTo", filters.DateTo.Format(time.DateOnly))
 	}
 
 	if filters.Status != "" {
