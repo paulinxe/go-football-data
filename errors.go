@@ -3,8 +3,8 @@ package football_data
 import (
 	"errors"
 	"fmt"
-	"strings"
 	"net/http"
+	"strings"
 )
 
 // ErrMapToNil is returned when a Get method is called with a nil mapTo argument.
